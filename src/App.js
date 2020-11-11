@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import Test from "./components/ItemCard/Test";
+import Test from "./components/ItemCard/ItemCard";
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from "./View/Home";

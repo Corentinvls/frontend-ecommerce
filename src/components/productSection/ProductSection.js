@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button ,Card,Container,Row,Col} from 'react-bootstrap';
 import {getAllProducts} from '../../services/DbServices'
-import ItemCard from "../ItemCard/Test";
+import ItemCard from "../ItemCard/ItemCard";
 
 
 class ProductSection extends React.Component {
