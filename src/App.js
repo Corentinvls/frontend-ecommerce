@@ -1,16 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
-import Test from "./Test";
+import Test from "./components/ItemCard/Test";
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Home from "./View/Home";
+import NavBar from "./components/NavBar/NavBar";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" /> <Test/>
-
-      </header>
+        <NavBar/>
+     <Home/>
 
     </div>
   );
