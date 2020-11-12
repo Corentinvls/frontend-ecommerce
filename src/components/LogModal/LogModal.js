@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal, Form, Col, Button} from "react-bootstrap";
-import {subscribe} from '../../services/DbServices'
+import {checkIfUserExist, connect, subscribe} from '../../services/DbServices'
 
 
 class LogModal extends React.Component {
@@ -13,11 +13,65 @@ class LogModal extends React.Component {
             password: "",
             firstname: "",
             lastname: "",
-            pseudo:"",
-            seller: true
+            pseudo: "",
+            seller: true,
+            login: "",
+            regexMail: false,
+            mailAlreadyExist: false,
+            pseudoAlreadyExist: false,
+            regexPassword: false,
+            displayRegexFail: false
         }
     }
 
+    checkEmail() {
+        if (/^[a-zA-Z0-9].+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)) {
+            checkIfUserExist("email", this.state.email).then(r => {
+                this.setState({mailAlreadyExist: r.data})
+            })
+            this.setState({regexMail: true})
+        } else {
+            this.setState({regexMail: false})
+        }
+    }
+
+    checkPassword() {
+        if (/^((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]))(?=.{6,})/.test(this.state.password)) {
+            this.setState({regexPassword: true})
+        } else {
+            this.setState({regexPassword: false})
+        }
+    }
+
+    checkPseudo() {
+        if (/^(?=.{6,})/.test(this.state.pseudo)) {
+            checkIfUserExist("pseudo", this.state.pseudo).then(r => {
+                this.setState({pseudoAlreadyExist: r.data})
+            })
+            this.setState({regexPseudo: true})
+        } else {
+            this.setState({regexPseudo: false})
+        }
+    }
+
+    async submit() {
+        if (this.state.register) {
+            if (this.state.regexMail && this.state.regexPassword && !this.state.mailAlreadyExist && !this.state.pseudoAlreadyExist) {
+                await subscribe(this.state).then(() => {
+                    this.props.toggle();
+                    alert("Votre inscription à bien était enregistrer");
+                })
+            } else {
+                this.setState({displayRegexFail: true})
+                alert("formulaire invalide");
+            }
+
+        } else {
+            await connect({login: this.state.login, password: this.state.password}).then(() => {
+                alert("Bienvenu");
+            })
+        }
+    }
 
     render() {
         return (
@@ -38,15 +92,32 @@ class LogModal extends React.Component {
                     <Form>
                         <Form.Row>
                             <Form.Group as={Col} controlId="formGridEmail">
-                                <Form.Label>Email</Form.Label>
-                                <Form.Control type="email" value={this.state.email}
-                                              onChange={(e) => this.setState({email: e.target.value})}/>
+                                <Form.Label>{this.state.register ? "Email" : "Email ou pseudo"}</Form.Label>
+                                <Form.Control type="email"
+                                              value={this.state.register ? this.state.email : this.state.login}
+                                              onChange={(e) => {
+                                                  this.setState({email: e.target.value}, () => this.checkEmail())
+                                              }}/>
+                                {(!this.state.regexMail && this.state.displayRegexFail) &&
+                                <Form.Text muted>
+                                    Votre Email n'est pas valide
+                                </Form.Text>}
+                                {this.state.mailAlreadyExist &&
+                                <Form.Text muted>
+                                    L'utilisateur existe déjà
+                                </Form.Text>}
+
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="formGridPassword">
                                 <Form.Label>Mot de passe</Form.Label>
                                 <Form.Control type="password" value={this.state.password}
-                                              onChange={(e) => this.setState({password: e.target.value})}/>
+                                              onChange={(e) => this.setState({password: e.target.value}, () => this.checkPassword())}/>
+                                {(!this.state.regexPassword && this.state.displayRegexFail) &&
+                                <Form.Text muted>
+                                    Votre mot de passe doit contenir au moins 6 caractères 1 minuscule 1 majuscule 1
+                                    chiffre
+                                </Form.Text>}
                             </Form.Group>
                         </Form.Row>
                         {this.state.register &&
@@ -65,28 +136,35 @@ class LogModal extends React.Component {
                             <Form.Group as={Col} controlId="formGridPseudo">
                                 <Form.Label>Pseudo</Form.Label>
                                 <Form.Control value={this.state.pseudo}
-                                              onChange={(e) => this.setState({pseudo: e.target.value})}/>
+                                              onChange={(e) => this.setState({pseudo: e.target.value}, () => this.checkPseudo())}/>
+                                {this.state.pseudoAlreadyExist &&
+                                <Form.Text muted>
+                                    L'utilisateur existe déjà
+                                </Form.Text>}
                             </Form.Group>
                         </Form.Row>,
 
-                        <Form.Group id="formGridCheckbox">
-                            <Form.Check type="checkbox" checked={this.state.seller}
-                                        onChange={() => this.setState({seller: !this.state.seller})}
-                                        label="Je souhaite être vendeur"/>
-                        </Form.Group>]
+                            <Form.Group id="formGridCheckbox">
+                                <Form.Check type="checkbox" checked={this.state.seller}
+                                            onChange={() => this.setState({seller: !this.state.seller})}
+                                            label="Je souhaite être vendeur"/>
+                            </Form.Group>]
                         }
                     </Form>
                 </Modal.Body>
 
                 <Modal.Footer>
                     <Button variant="outlined" onClick={() => {
-                        this.setState({register:!this.state.register})
-                    }}> {this.state.register ? "J'ai déja un compte" : "je n'ai pas de compte"}</Button>
+                        this.setState({register: !this.state.register})
+                    }}>
+                        {this.state.register ? "J'ai déja un compte" : "je n'ai pas de compte"}
+                    </Button>
                     <Button variant="primary" onClick={async () => {
-                        await subscribe(this.state).then(() => {alert("Votre inscription à bien était enregistrer");
-                        this.props.toggle();
-                        })
-                    }}>{this.state.register ? "Je m'inscrit" : "Je me connecte"}</Button>
+                        await this.submit();
+                    }
+                    }>
+                        {this.state.register ? "Je m'inscrit" : "Je me connecte"}
+                    </Button>
                 </Modal.Footer>
             </Modal>);
     }
