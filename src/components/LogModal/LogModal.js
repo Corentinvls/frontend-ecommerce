@@ -44,7 +44,7 @@ class LogModal extends React.Component {
     }
 
     checkPseudo() {
-        if (/^(?=.{6,})/.test(this.state.pseudo)) {
+        if (/^(?=.{2,})/.test(this.state.pseudo)) {
             checkIfUserExist("pseudo", this.state.pseudo).then(r => {
                 this.setState({pseudoAlreadyExist: r.data})
             })
@@ -56,7 +56,7 @@ class LogModal extends React.Component {
 
     async submit() {
         if (this.state.register) {
-            if (this.state.regexMail && this.state.regexPassword && !this.state.mailAlreadyExist && !this.state.pseudoAlreadyExist) {
+            if (this.state.regexPseudo &&this.state.regexMail && this.state.regexPassword && !this.state.mailAlreadyExist && !this.state.pseudoAlreadyExist) {
                 await subscribe({
                         lastname: this.state.lastname, firstname: this.state.firstname,
                         pseudo: this.state.pseudo,
@@ -142,6 +142,10 @@ class LogModal extends React.Component {
                                 <Form.Label>Pseudo</Form.Label>
                                 <Form.Control value={this.state.pseudo}
                                               onChange={(e) => this.setState({pseudo: e.target.value}, () => this.checkPseudo())}/>
+                                {(!this.state.regexPassword && this.state.displayRegexFail) &&
+                                <Form.Text muted>
+                                    Votre pseudo doit contenir au moins 2 caractères
+                                </Form.Text>}
                                 {this.state.pseudoAlreadyExist &&
                                 <Form.Text muted>
                                     L'utilisateur existe déjà
