@@ -1,6 +1,7 @@
 import React from 'react';
 import {Navbar, Nav, Form, FormControl, Button} from "react-bootstrap";
 import Badge from "react-bootstrap/Badge";
+import LogModal from "../LogModal/LogModal";
 
 
 class NavBar extends React.Component {
@@ -8,12 +9,16 @@ class NavBar extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            modalLog:false
+        }
     }
-
+toggleModal(){
+        this.setState({modalLog:!this.state.modalLog});
+}
 
     render() {
-        return (<Navbar bg="primary" variant="dark" expand="lg" className="justify-content-between">
+        return (<><Navbar bg="primary" variant="dark" expand="lg" className="justify-content-between">
             <Navbar.Brand href="#home">
                 <img
                     alt=""
@@ -37,12 +42,14 @@ class NavBar extends React.Component {
                     </svg>
                 </Nav.Link>
                 <div className="d-inline-block ">
-                    <Nav.Link href="#home">Connection</Nav.Link>
-                    <Nav.Link href="#features">Inscription</Nav.Link>
+                    <Nav.Link onClick={()=>this.toggleModal()}>Connection</Nav.Link>
+                    <Nav.Link onClick={()=>this.toggleModal()}>Inscription</Nav.Link>
                 </div>
 
             </Nav>
-        </Navbar>);
+        </Navbar>
+        <LogModal show={this.state.modalLog} toggle={()=>this.toggleModal()}/>
+        </>);
     }
 }
 
