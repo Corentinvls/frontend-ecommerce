@@ -3,83 +3,13 @@ import {Modal, Form, Col, Button} from "react-bootstrap";
 import {checkIfUserExist, connect, subscribe} from '../../services/DbServices'
 
 
-class LogModal extends React.Component {
+class CreateProductModal extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            register: true,
-            email: "",
-            password: "",
-            firstname: "",
-            lastname: "",
-            pseudo: "",
-            seller: true,
-            login: "",
-            regexMail: false,
-            mailAlreadyExist: false,
-            pseudoAlreadyExist: false,
-            regexPassword: false,
-            displayRegexFail: false
-        }
+        this.state = {}
     }
 
-    checkEmail() {
-        if (/^[a-zA-Z0-9].+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)) {
-            checkIfUserExist("email", this.state.email).then(r => {
-                this.setState({mailAlreadyExist: r.data}, () => console.log(this.state.mailAlreadyExist))
-            })
-
-            this.setState({regexMail: true})
-        } else {
-            this.setState({regexMail: false})
-        }
-    }
-
-    checkPseudo() {
-        if (/^(?=.{2,})/.test(this.state.pseudo)) {
-            checkIfUserExist("pseudo", this.state.pseudo).then(r => {
-                this.setState({pseudoAlreadyExist: r.data}, () => console.log(this.state.pseudoAlreadyExist))
-            })
-            console.log(this.state.pseudoAlreadyExist)
-            this.setState({regexPseudo: true})
-        } else {
-            this.setState({regexPseudo: false})
-        }
-    }
-
-    checkPassword() {
-        if (/^((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]))(?=.{6,})/.test(this.state.password)) {
-            this.setState({regexPassword: true})
-        } else {
-            this.setState({regexPassword: false})
-        }
-    }
-
-    async submit() {
-        if (this.state.register) {
-            if (this.state.regexPseudo && this.state.regexMail && this.state.regexPassword && !this.state.mailAlreadyExist && !this.state.pseudoAlreadyExist) {
-                await subscribe({
-                    lastname: this.state.lastname, firstname: this.state.firstname,
-                    pseudo: this.state.pseudo,
-                    password: this.state.password,
-                    email: this.state.email,
-                    seller: this.state.seller
-                }).then(() => {
-                    this.props.toggle();
-                    alert("Votre inscription à bien était enregistrer");
-                })
-            } else {
-                this.setState({displayRegexFail: true})
-                alert("formulaire invalide");
-            }
-
-        } else {
-            this.props.toggle();
-            alert("Bienvenu");
-
-        }
-    }
 
     render() {
         return (
@@ -93,34 +23,22 @@ class LogModal extends React.Component {
 
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        {this.state.register ? "Inscription" : "Connection"}
+                        Création d'un produit
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Form.Row>
                             <Form.Group as={Col} controlId="formGridEmail">
-                                <Form.Label>{this.state.register ? "Email" : "Email ou pseudo"}</Form.Label>
-                                <Form.Control type="email"
-                                              value={this.state.register ? this.state.email : this.state.login}
-                                              onChange={(e) => {
-                                                  this.state.register ? this.setState({email: e.target.value}, () => this.checkEmail()) : this.setState({login: e.target.value}, () => this.checkEmail())
-
-                                              }}/>
-                                {(!this.state.regexMail && this.state.displayRegexFail) &&
-                                <Form.Text muted>
-                                    Votre Email n'est pas valide
-                                </Form.Text>}
-                                {this.state.mailAlreadyExist &&
-                                <Form.Text muted>
-                                    L'utilisateur existe déjà
-                                </Form.Text>}
-
+                                <Form.Label>Nom de produit</Form.Label>
+                                <Form.Control
+                                              value={this.state.title}
+                                              onChange={(e) => {this.setState({title: e.target.value})}}/>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="formGridPassword">
-                                <Form.Label>Mot de passe</Form.Label>
-                                <Form.Control type="password" value={this.state.password}
+                                <Form.Label>Catégories</Form.Label>
+                                <Form.Control  value={this.state.password}
                                               onChange={(e) => this.setState({password: e.target.value}, () => this.checkPassword())}/>
                                 {(!this.state.regexPassword && this.state.displayRegexFail) &&
                                 <Form.Text muted>
@@ -183,4 +101,4 @@ class LogModal extends React.Component {
     }
 }
 
-export default LogModal;
+export default CreateProductModal;
