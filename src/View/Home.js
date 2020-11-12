@@ -14,7 +14,7 @@ class Home extends React.Component {
 
 
     render() {
-        return (<Container><ProductSection/></Container>);
+        return (<Container fluid><ProductSection/></Container>);
     }
 }
 

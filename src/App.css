@@ -41,3 +41,16 @@
   width: 18rem;
   margin: 1rem
 }
+.horizontal-scroller {
+   overflow-x: hidden;
+   overflow-y: hidden;
+   white-space: nowrap;
+ }
+.horizontal-scroller:hover {
+  overflow-x: auto;
+}
+.horizontal-scroller-item {
+  display: inline-block;
+  margin: 0 0.1rem;
+}
+

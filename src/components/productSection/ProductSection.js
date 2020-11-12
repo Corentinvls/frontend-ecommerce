@@ -17,14 +17,14 @@ class ProductSection extends React.Component {
     }
     generateView(){
         return  this.state.result.map((res,index)=>{
-            return (<ItemCard key={index} {...res}/>)
+            return (<div className="horizontal-scroller-item"><ItemCard  key={index} {...res}/></div>)
         })
     }
 
 
     render() {
 
-        return (<Container><Row>{this.generateView()} </Row></Container>);
+        return (<Container  fluid className="horizontal-scroller">{this.generateView()} </Container>);
     }
 }
 
