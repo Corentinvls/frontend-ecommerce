@@ -57,7 +57,12 @@ class LogModal extends React.Component {
     async submit() {
         if (this.state.register) {
             if (this.state.regexMail && this.state.regexPassword && !this.state.mailAlreadyExist && !this.state.pseudoAlreadyExist) {
-                await subscribe(this.state).then(() => {
+                await subscribe({
+                        lastname: this.state.lastname, firstname: this.state.firstname,
+                        pseudo: this.state.pseudo,
+                        password: this.state.password,
+                        email: this.state.email
+                    }).then(() => {
                     this.props.toggle();
                     alert("Votre inscription à bien était enregistrer");
                 })
